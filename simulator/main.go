@@ -52,7 +52,8 @@ type SensorData struct {
 // GateCommand represents commands sent to water gates
 type GateCommand struct {
 	GateID    int    `json:"gate_id"`
-	Action    string `json:"action"` // "OPEN" or "CLOSE"
+	Command   string `json:"command"` // ✅ FIXED: Was "Action", should be "Command"
+	Reason    string `json:"reason"`
 	Timestamp int64  `json:"timestamp"`
 }
 
@@ -171,8 +172,8 @@ type Simulator struct {
 	client        mqtt.Client
 	sensors       []GeoJSON
 	scenario      Scenario
-	anyGateOpen   bool       // ← NEW: Tracks if ANY gate is open
-	gateStatusMux sync.Mutex // ← NEW: Thread-safe gate status updates
+	anyGateOpen   bool       // ← Tracks if ANY gate is open
+	gateStatusMux sync.Mutex // ← Thread-safe gate status updates
 }
 
 // NewSimulator creates and connects to MQTT broker
@@ -186,48 +187,72 @@ func NewSimulator(broker string, sensors []GeoJSON) (*Simulator, error) {
 	opts := mqtt.NewClientOptions()
 	opts.AddBroker(broker)
 	opts.SetClientID("sensor-simulator")
-	opts.SetDefaultPublishHandler(sim.handleMessage) // ← NEW: Listen to all messages
+
+	// ✅ CRITICAL: Set message handler BEFORE connecting
+	opts.SetDefaultPublishHandler(sim.handleMessage)
+
+	// Auto-reconnect settings
+	opts.SetAutoReconnect(true)
+	opts.SetConnectionLostHandler(func(client mqtt.Client, err error) {
+		fmt.Printf("⚠️ Connection lost: %v\n", err)
+	})
+
+	// ✅ Re-subscribe on reconnect
+	opts.SetOnConnectHandler(func(client mqtt.Client) {
+		fmt.Println("✓ Connected to MQTT broker")
+
+		topic := "farm/commands/water-gate-sensors/+"
+		if token := client.Subscribe(topic, 0, nil); token.Wait() && token.Error() != nil {
+			fmt.Printf("❌ Failed to subscribe to %s: %v\n", topic, token.Error())
+		} else {
+			fmt.Printf("✓ Subscribed to gate commands: %s\n", topic)
+		}
+	})
 
 	// Connect to broker
-	client := mqtt.NewClient(opts)
-	if token := client.Connect(); token.Wait() && token.Error() != nil {
+	sim.client = mqtt.NewClient(opts)
+	if token := sim.client.Connect(); token.Wait() && token.Error() != nil {
 		return nil, token.Error()
 	}
-
-	sim.client = client
-	fmt.Println("✓ Connected to MQTT broker")
-
-	// Subscribe to ALL gate command topics
-	// Pattern: farm/commands/water-gate-sensors/+
-	topic := "farm/commands/water-gate-sensors/+"
-	if token := client.Subscribe(topic, 0, nil); token.Wait() && token.Error() != nil {
-		return nil, token.Error()
-	}
-	fmt.Printf("✓ Subscribed to gate commands: %s\n", topic)
 
 	return sim, nil
 }
 
 // handleMessage processes incoming MQTT messages (gate commands)
 func (s *Simulator) handleMessage(client mqtt.Client, msg mqtt.Message) {
+	// ✅ Debug: Log ALL incoming messages
+	fmt.Printf("\n📨 DEBUG: Received message on topic: %s\n", msg.Topic())
+	fmt.Printf("📨 DEBUG: Payload: %s\n", string(msg.Payload()))
+
+	// Only process gate commands
+	if !strings.Contains(msg.Topic(), "farm/commands/water-gate-sensors/") {
+		fmt.Printf("⚠️ DEBUG: Ignoring non-gate topic: %s\n\n", msg.Topic())
+		return
+	}
+
 	// Parse gate command
 	var cmd GateCommand
 	if err := json.Unmarshal(msg.Payload(), &cmd); err != nil {
-		return // Invalid message, ignore
+		fmt.Printf("❌ Error parsing gate command: %v\n", err)
+		fmt.Printf("   Raw payload: %s\n\n", string(msg.Payload()))
+		return
 	}
 
 	// Update gate status
 	s.gateStatusMux.Lock()
 	defer s.gateStatusMux.Unlock()
 
-	if cmd.Action == "OPEN" {
+	icon := "🚪"
+	if cmd.Command == "OPEN" {
 		s.anyGateOpen = true
-		fmt.Printf("🚰 Gate #%d OPENED → Water flowing!\n", cmd.GateID)
-	} else if cmd.Action == "CLOSE" {
-		// In simple mode, we assume if we get a CLOSE, all gates might be closed
-		// (In real system, you'd track each gate individually)
+		icon = "💧"
+		fmt.Printf("%s Gate command received: Gate #%d → %s (Reason: %s)\n\n",
+			icon, cmd.GateID, cmd.Command, cmd.Reason)
+	} else if cmd.Command == "CLOSE" {
 		s.anyGateOpen = false
-		fmt.Printf("🚫 Gate #%d CLOSED → Water stopped\n", cmd.GateID)
+		icon = "🚫"
+		fmt.Printf("%s Gate command received: Gate #%d → %s (Reason: %s)\n\n",
+			icon, cmd.GateID, cmd.Command, cmd.Reason)
 	}
 }
 
@@ -297,7 +322,7 @@ func (s *Simulator) generateValue(sensorType string) float64 {
 	case "soil-temperature-sensors":
 		r = s.scenario.Ranges.SoilTemperature
 	case "water-flow-sensors":
-		// ← NEW: Flow depends on gate status!
+		// ← Flow depends on gate status!
 		s.gateStatusMux.Lock()
 		if s.anyGateOpen {
 			r = s.scenario.Ranges.WaterFlow.GatesOpen
@@ -331,8 +356,8 @@ func (s *Simulator) getUnit(sensorType string) string {
 
 // publish sends sensor data to MQTT topic
 func (s *Simulator) publish(data SensorData) {
-	// Create topic: farm/sensor-type/sensor-id
-	topic := fmt.Sprintf("farm/%s/%d", data.Type, data.SensorID)
+	// ✅ Match Edge Processor's expected topic structure
+	topic := fmt.Sprintf("farm/sensors/%s/%d", data.Type, data.SensorID)
 
 	// Convert data to JSON
 	payload, _ := json.Marshal(data)
