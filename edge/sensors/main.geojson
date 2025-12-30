@@ -1,0 +1,140 @@
+[
+{
+"type": "FeatureCollection",
+"name": "soil-moisture-sensors",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": 9001 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.636480552355096, 32.763705468128371 ] ] } },
+{ "type": "Feature", "properties": { "id": 9002 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.636431130077973, 32.763625545656858 ] ] } },
+{ "type": "Feature", "properties": { "id": 9003 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.636583198622965, 32.763675630414063 ] ] } },
+{ "type": "Feature", "properties": { "id": 9004 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.636532509107965, 32.763582920309389 ] ] } },
+{ "type": "Feature", "properties": { "id": 9005 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.63668584489082, 32.763637267623835 ] ] } },
+{ "type": "Feature", "properties": { "id": 9006 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.636637689851575, 32.763537098038086 ] ] } },
+{ "type": "Feature", "properties": { "id": 9007 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.636789758396553, 32.763602101718277 ] ] } },
+{ "type": "Feature", "properties": { "id": 9008 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.636728930978556, 32.763498735188165 ] ] } },
+{ "type": "Feature", "properties": { "id": 9009 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.63688733571292, 32.763566935798814 ] ] } },
+{ "type": "Feature", "properties": { "id": 9010 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.636830310008556, 32.7634625035925 ] ] } },
+{ "type": "Feature", "properties": { "id": 9011 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.636205561736261, 32.763579723407503 ] ] } },
+{ "type": "Feature", "properties": { "id": 9012 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.636277794295133, 32.763553082554004 ] ] } },
+{ "type": "Feature", "properties": { "id": 9013 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.636137130891022, 32.763480619392176 ] ] } },
+{ "type": "Feature", "properties": { "id": 9014 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.636223303066501, 32.763444387789143 ] ] } },
+{ "type": "Feature", "properties": { "id": 9015 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.636361431994864, 32.763513654076206 ] ] } },
+{ "type": "Feature", "properties": { "id": 9016 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.636303139052615, 32.763414549987338 ] ] } },
+{ "type": "Feature", "properties": { "id": 9017 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.636465345500604, 32.763468897404572 ] ] } },
+{ "type": "Feature", "properties": { "id": 9018 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.63639438017961, 32.763375121448192 ] ] } },
+{ "type": "Feature", "properties": { "id": 9019 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.636566724530589, 32.763427337617912 ] ] } },
+{ "type": "Feature", "properties": { "id": 9020 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.636495759209595, 32.763335692891573 ] ] } },
+{ "type": "Feature", "properties": { "id": 9021 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.636670638036321, 32.763382580902878 ] ] } },
+{ "type": "Feature", "properties": { "id": 9022 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.63659713823958, 32.763287739218114 ] ] } },
+{ "type": "Feature", "properties": { "id": 9023 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.636761879163309, 32.763348480533473 ] ] } },
+{ "type": "Feature", "properties": { "id": 9024 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.636707387934692, 32.76324191679489 ] ] } },
+{ "type": "Feature", "properties": { "id": 9025 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.636069967283632, 32.763399631082692 ] ] } },
+{ "type": "Feature", "properties": { "id": 9026 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.636025613958019, 32.76334315234957 ] ] } },
+{ "type": "Feature", "properties": { "id": 9027 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.636157406696995, 32.763360202536937 ] ] } },
+{ "type": "Feature", "properties": { "id": 9028 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.636102915468378, 32.76331118323948 ] ] } },
+{ "type": "Feature", "properties": { "id": 9029 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.636241044396733, 32.763327167795964 ] ] } },
+{ "type": "Feature", "properties": { "id": 9030 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.636189087643871, 32.763269623379195 ] ] } },
+{ "type": "Feature", "properties": { "id": 9031 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.63634178980778, 32.76329466586143 ] ] } },
+{ "type": "Feature", "properties": { "id": 9032 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.636286031341285, 32.763218472755284 ] ] } },
+{ "type": "Feature", "properties": { "id": 9033 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.636441267980956, 32.763246712165859 ] ] } },
+{ "type": "Feature", "properties": { "id": 9034 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.636382341419775, 32.763168387740897 ] ] } },
+{ "type": "Feature", "properties": { "id": 9035 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.636551517676054, 32.76319662716736 ] ] } },
+{ "type": "Feature", "properties": { "id": 9036 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.636491323877003, 32.763118835518085 ] ] } },
+{ "type": "Feature", "properties": { "id": 9037 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.636658599276487, 32.763154534434072 ] ] } },
+{ "type": "Feature", "properties": { "id": 9038 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 52.636602840809999, 32.763063422247015 ] ] } }
+]
+},
+{
+"type": "FeatureCollection",
+"name": "soil-temperature-sensors",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": 8001 }, "geometry": { "type": "Point", "coordinates": [ 52.636452673121831, 32.763661777186165 ] } },
+{ "type": "Feature", "properties": { "id": 8002 }, "geometry": { "type": "Point", "coordinates": [ 52.636552784913945, 32.763625545656858 ] } },
+{ "type": "Feature", "properties": { "id": 8003 }, "geometry": { "type": "Point", "coordinates": [ 52.636661767371173, 32.763592511014345 ] } },
+{ "type": "Feature", "properties": { "id": 8004 }, "geometry": { "type": "Point", "coordinates": [ 52.636755542973923, 32.763549885651059 ] } },
+{ "type": "Feature", "properties": { "id": 8005 }, "geometry": { "type": "Point", "coordinates": [ 52.636854387528153, 32.763512588441429 ] } },
+{ "type": "Feature", "properties": { "id": 8006 }, "geometry": { "type": "Point", "coordinates": [ 52.636206828974117, 32.763516850980466 ] } },
+{ "type": "Feature", "properties": { "id": 8007 }, "geometry": { "type": "Point", "coordinates": [ 52.636331018285844, 32.763471028675156 ] } },
+{ "type": "Feature", "properties": { "id": 8008 }, "geometry": { "type": "Point", "coordinates": [ 52.636428595602204, 32.763425206346277 ] } },
+{ "type": "Feature", "properties": { "id": 8009 }, "geometry": { "type": "Point", "coordinates": [ 52.636535043583699, 32.763381515266531 ] } },
+{ "type": "Feature", "properties": { "id": 8010 }, "geometry": { "type": "Point", "coordinates": [ 52.636627551948557, 32.763334627254672 ] } },
+{ "type": "Feature", "properties": { "id": 8011 }, "geometry": { "type": "Point", "coordinates": [ 52.636740336119423, 32.763292001767908 ] } },
+{ "type": "Feature", "properties": { "id": 8012 }, "geometry": { "type": "Point", "coordinates": [ 52.636086441376008, 32.763353808717056 ] } },
+{ "type": "Feature", "properties": { "id": 8013 }, "geometry": { "type": "Point", "coordinates": [ 52.636223303066487, 32.763295198680119 ] } },
+{ "type": "Feature", "properties": { "id": 8014 }, "geometry": { "type": "Point", "coordinates": [ 52.636306940766225, 32.763261098277241 ] } },
+{ "type": "Feature", "properties": { "id": 8015 }, "geometry": { "type": "Point", "coordinates": [ 52.636419724937078, 32.763204619456246 ] } },
+{ "type": "Feature", "properties": { "id": 8016 }, "geometry": { "type": "Point", "coordinates": [ 52.636523638442817, 32.763161993907246 ] } },
+{ "type": "Feature", "properties": { "id": 8017 }, "geometry": { "type": "Point", "coordinates": [ 52.636636422613677, 32.763107646302657 ] } }
+]
+},
+{
+"type": "FeatureCollection",
+"name": "water-flow-sensors",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": 6001 }, "geometry": { "type": "Point", "coordinates": [ 52.636426219531145, 32.763793915579868 ] } },
+{ "type": "Feature", "properties": { "id": 6002 }, "geometry": { "type": "Point", "coordinates": [ 52.636514926182386, 32.763763012263418 ] } },
+{ "type": "Feature", "properties": { "id": 6003 }, "geometry": { "type": "Point", "coordinates": [ 52.636609969022999, 32.763732108936253 ] } },
+{ "type": "Feature", "properties": { "id": 6004 }, "geometry": { "type": "Point", "coordinates": [ 52.636717684242356, 32.763693746170354 ] } },
+{ "type": "Feature", "properties": { "id": 6005 }, "geometry": { "type": "Point", "coordinates": [ 52.636820330510218, 32.763657514654057 ] } },
+{ "type": "Feature", "properties": { "id": 6006 }, "geometry": { "type": "Point", "coordinates": [ 52.636916640588701, 32.763623414389954 ] } },
+{ "type": "Feature", "properties": { "id": 6007 }, "geometry": { "type": "Point", "coordinates": [ 52.636241202801422, 32.763725715143082 ] } },
+{ "type": "Feature", "properties": { "id": 6008 }, "geometry": { "type": "Point", "coordinates": [ 52.636186711572805, 32.763644727056551 ] } },
+{ "type": "Feature", "properties": { "id": 6009 }, "geometry": { "type": "Point", "coordinates": [ 52.63627161651042, 32.763611692421158 ] } },
+{ "type": "Feature", "properties": { "id": 6010 }, "geometry": { "type": "Point", "coordinates": [ 52.636390736870652, 32.763560541993769 ] } },
+{ "type": "Feature", "properties": { "id": 6011 }, "geometry": { "type": "Point", "coordinates": [ 52.636485779711265, 32.76351578534571 ] } },
+{ "type": "Feature", "properties": { "id": 6012 }, "geometry": { "type": "Point", "coordinates": [ 52.636599831120002, 32.763474225580929 ] } },
+{ "type": "Feature", "properties": { "id": 6013 }, "geometry": { "type": "Point", "coordinates": [ 52.636693606722737, 32.763430534525249 ] } },
+{ "type": "Feature", "properties": { "id": 6014 }, "geometry": { "type": "Point", "coordinates": [ 52.636783580611848, 32.763391105993179 ] } },
+{ "type": "Feature", "properties": { "id": 6015 }, "geometry": { "type": "Point", "coordinates": [ 52.636127151392692, 32.763553082553997 ] } },
+{ "type": "Feature", "properties": { "id": 6016 }, "geometry": { "type": "Point", "coordinates": [ 52.636062522261078, 32.763456109779959 ] } },
+{ "type": "Feature", "properties": { "id": 6017 }, "geometry": { "type": "Point", "coordinates": [ 52.636139823771437, 32.763422009438713 ] } },
+{ "type": "Feature", "properties": { "id": 6018 }, "geometry": { "type": "Point", "coordinates": [ 52.636275418224038, 32.763365530719788 ] } },
+{ "type": "Feature", "properties": { "id": 6019 }, "geometry": { "type": "Point", "coordinates": [ 52.636362857637401, 32.763328233432937 ] } },
+{ "type": "Feature", "properties": { "id": 6020 }, "geometry": { "type": "Point", "coordinates": [ 52.636461702191646, 32.763285607943118 ] } },
+{ "type": "Feature", "properties": { "id": 6021 }, "geometry": { "type": "Point", "coordinates": [ 52.636575753600383, 32.763236588604592 ] } },
+{ "type": "Feature", "properties": { "id": 6022 }, "geometry": { "type": "Point", "coordinates": [ 52.636674598154606, 32.763193963070897 ] } }
+]
+},
+{
+"type": "FeatureCollection",
+"name": "water-gate-sensors",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": 7001 }, "geometry": { "type": "Point", "coordinates": [ 52.636505445867662, 32.763750804864685 ] } },
+{ "type": "Feature", "properties": { "id": 7002 }, "geometry": { "type": "Point", "coordinates": [ 52.636609389504862, 32.763714075254192 ] } },
+{ "type": "Feature", "properties": { "id": 7003 }, "geometry": { "type": "Point", "coordinates": [ 52.636707251333497, 32.763680600152966 ] } },
+{ "type": "Feature", "properties": { "id": 7004 }, "geometry": { "type": "Point", "coordinates": [ 52.63681119497069, 32.763643405581277 ] } },
+{ "type": "Feature", "properties": { "id": 7005 }, "geometry": { "type": "Point", "coordinates": [ 52.636912927041138, 32.763606210994048 ] } },
+{ "type": "Feature", "properties": { "id": 7006 }, "geometry": { "type": "Point", "coordinates": [ 52.636261620633618, 32.763598307142246 ] } },
+{ "type": "Feature", "properties": { "id": 7007 }, "geometry": { "type": "Point", "coordinates": [ 52.636379939454677, 32.7635453048239 ] } },
+{ "type": "Feature", "properties": { "id": 7008 }, "geometry": { "type": "Point", "coordinates": [ 52.636477248391621, 32.763502531000114 ] } },
+{ "type": "Feature", "properties": { "id": 7009 }, "geometry": { "type": "Point", "coordinates": [ 52.636584509378942, 32.763455107823638 ] } },
+{ "type": "Feature", "properties": { "id": 7010 }, "geometry": { "type": "Point", "coordinates": [ 52.636680712532517, 32.763415123557174 ] } },
+{ "type": "Feature", "properties": { "id": 7011 }, "geometry": { "type": "Point", "coordinates": [ 52.636770280985843, 32.763376999007306 ] } },
+{ "type": "Feature", "properties": { "id": 7012 }, "geometry": { "type": "Point", "coordinates": [ 52.636126715061934, 32.763407684621889 ] } },
+{ "type": "Feature", "properties": { "id": 7013 }, "geometry": { "type": "Point", "coordinates": [ 52.636263832200356, 32.763350962719962 ] } },
+{ "type": "Feature", "properties": { "id": 7014 }, "geometry": { "type": "Point", "coordinates": [ 52.636347871736817, 32.763313768010562 ] } },
+{ "type": "Feature", "properties": { "id": 7015 }, "geometry": { "type": "Point", "coordinates": [ 52.636449603807264, 32.763270994075548 ] } },
+{ "type": "Feature", "properties": { "id": 7016 }, "geometry": { "type": "Point", "coordinates": [ 52.636565711061571, 32.763220781169068 ] } },
+{ "type": "Feature", "properties": { "id": 7017 }, "geometry": { "type": "Point", "coordinates": [ 52.636665231565274, 32.763176147450665 ] } }
+]
+},
+{
+"type": "FeatureCollection",
+"name": "water-level-sensor",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": 1 }, "geometry": { "type": "Point", "coordinates": [ 52.63632674135799, 32.763772602948983 ] } }
+]
+},
+{
+"type": "FeatureCollection",
+"name": "weather-sensor",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": 4000 }, "geometry": { "type": "Point", "coordinates": [ 52.636346225140365, 32.763596773549551 ] } }
+]
+}
+]

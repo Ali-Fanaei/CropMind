@@ -1,0 +1,24 @@
+{
+"type": "FeatureCollection",
+"name": "soil-temperature-sensors",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": 8001 }, "geometry": { "type": "Point", "coordinates": [ 52.636452673121831, 32.763661777186165 ] } },
+{ "type": "Feature", "properties": { "id": 8002 }, "geometry": { "type": "Point", "coordinates": [ 52.636552784913945, 32.763625545656858 ] } },
+{ "type": "Feature", "properties": { "id": 8003 }, "geometry": { "type": "Point", "coordinates": [ 52.636661767371173, 32.763592511014345 ] } },
+{ "type": "Feature", "properties": { "id": 8004 }, "geometry": { "type": "Point", "coordinates": [ 52.636755542973923, 32.763549885651059 ] } },
+{ "type": "Feature", "properties": { "id": 8005 }, "geometry": { "type": "Point", "coordinates": [ 52.636854387528153, 32.763512588441429 ] } },
+{ "type": "Feature", "properties": { "id": 8006 }, "geometry": { "type": "Point", "coordinates": [ 52.636206828974117, 32.763516850980466 ] } },
+{ "type": "Feature", "properties": { "id": 8007 }, "geometry": { "type": "Point", "coordinates": [ 52.636331018285844, 32.763471028675156 ] } },
+{ "type": "Feature", "properties": { "id": 8008 }, "geometry": { "type": "Point", "coordinates": [ 52.636428595602204, 32.763425206346277 ] } },
+{ "type": "Feature", "properties": { "id": 8009 }, "geometry": { "type": "Point", "coordinates": [ 52.636535043583699, 32.763381515266531 ] } },
+{ "type": "Feature", "properties": { "id": 8010 }, "geometry": { "type": "Point", "coordinates": [ 52.636627551948557, 32.763334627254672 ] } },
+{ "type": "Feature", "properties": { "id": 8011 }, "geometry": { "type": "Point", "coordinates": [ 52.636740336119423, 32.763292001767908 ] } },
+{ "type": "Feature", "properties": { "id": 8012 }, "geometry": { "type": "Point", "coordinates": [ 52.636086441376008, 32.763353808717056 ] } },
+{ "type": "Feature", "properties": { "id": 8013 }, "geometry": { "type": "Point", "coordinates": [ 52.636223303066487, 32.763295198680119 ] } },
+{ "type": "Feature", "properties": { "id": 8014 }, "geometry": { "type": "Point", "coordinates": [ 52.636306940766225, 32.763261098277241 ] } },
+{ "type": "Feature", "properties": { "id": 8015 }, "geometry": { "type": "Point", "coordinates": [ 52.636419724937078, 32.763204619456246 ] } },
+{ "type": "Feature", "properties": { "id": 8016 }, "geometry": { "type": "Point", "coordinates": [ 52.636523638442817, 32.763161993907246 ] } },
+{ "type": "Feature", "properties": { "id": 8017 }, "geometry": { "type": "Point", "coordinates": [ 52.636636422613677, 32.763107646302657 ] } }
+]
+}

@@ -1,0 +1,24 @@
+{
+"type": "FeatureCollection",
+"name": "water-gate-sensors",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": 7001 }, "geometry": { "type": "Point", "coordinates": [ 52.636505445867662, 32.763750804864685 ] } },
+{ "type": "Feature", "properties": { "id": 7002 }, "geometry": { "type": "Point", "coordinates": [ 52.636609389504862, 32.763714075254192 ] } },
+{ "type": "Feature", "properties": { "id": 7003 }, "geometry": { "type": "Point", "coordinates": [ 52.636707251333497, 32.763680600152966 ] } },
+{ "type": "Feature", "properties": { "id": 7004 }, "geometry": { "type": "Point", "coordinates": [ 52.63681119497069, 32.763643405581277 ] } },
+{ "type": "Feature", "properties": { "id": 7005 }, "geometry": { "type": "Point", "coordinates": [ 52.636912927041138, 32.763606210994048 ] } },
+{ "type": "Feature", "properties": { "id": 7006 }, "geometry": { "type": "Point", "coordinates": [ 52.636261620633618, 32.763598307142246 ] } },
+{ "type": "Feature", "properties": { "id": 7007 }, "geometry": { "type": "Point", "coordinates": [ 52.636379939454677, 32.7635453048239 ] } },
+{ "type": "Feature", "properties": { "id": 7008 }, "geometry": { "type": "Point", "coordinates": [ 52.636477248391621, 32.763502531000114 ] } },
+{ "type": "Feature", "properties": { "id": 7009 }, "geometry": { "type": "Point", "coordinates": [ 52.636584509378942, 32.763455107823638 ] } },
+{ "type": "Feature", "properties": { "id": 7010 }, "geometry": { "type": "Point", "coordinates": [ 52.636680712532517, 32.763415123557174 ] } },
+{ "type": "Feature", "properties": { "id": 7011 }, "geometry": { "type": "Point", "coordinates": [ 52.636770280985843, 32.763376999007306 ] } },
+{ "type": "Feature", "properties": { "id": 7012 }, "geometry": { "type": "Point", "coordinates": [ 52.636126715061934, 32.763407684621889 ] } },
+{ "type": "Feature", "properties": { "id": 7013 }, "geometry": { "type": "Point", "coordinates": [ 52.636263832200356, 32.763350962719962 ] } },
+{ "type": "Feature", "properties": { "id": 7014 }, "geometry": { "type": "Point", "coordinates": [ 52.636347871736817, 32.763313768010562 ] } },
+{ "type": "Feature", "properties": { "id": 7015 }, "geometry": { "type": "Point", "coordinates": [ 52.636449603807264, 32.763270994075548 ] } },
+{ "type": "Feature", "properties": { "id": 7016 }, "geometry": { "type": "Point", "coordinates": [ 52.636565711061571, 32.763220781169068 ] } },
+{ "type": "Feature", "properties": { "id": 7017 }, "geometry": { "type": "Point", "coordinates": [ 52.636665231565274, 32.763176147450665 ] } }
+]
+}
