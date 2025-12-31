@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"strings"
 	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
@@ -27,7 +28,7 @@ type Config struct {
 
 func loadConfig() *Config {
 	return &Config{
-		RedisAddr:  "localhost:6379", // Docker Redis
+		RedisAddr:  "localhost:6379",
 		MQTTBroker: "tcp://localhost:1883",
 		HTTPPort:   ":8080",
 	}
@@ -49,7 +50,6 @@ func newRedisClient(addr string) *RedisClient {
 		DB:   0,
 	})
 
-	// Test connection
 	_, err := rdb.Ping(ctx).Result()
 	if err != nil {
 		log.Fatalf("❌ Failed to connect to Redis: %v", err)
@@ -59,13 +59,22 @@ func newRedisClient(addr string) *RedisClient {
 	return &RedisClient{client: rdb}
 }
 
-// Store latest sensor reading
-func (r *RedisClient) storeSensorReading(sensorID int, value float64, timestamp int64) error {
+// Store latest sensor reading with full metadata
+func (r *RedisClient) storeSensorReading(sensorID int, sensorType string, value float64, unit string, lat, lon float64, timestamp int64) error {
 	key := fmt.Sprintf("sensor:%d:latest", sensorID)
 	data := map[string]interface{}{
+		"sensor_id": sensorID,
+		"type":      sensorType,
 		"value":     value,
+		"unit":      unit,
+		"lat":       lat,
+		"lon":       lon,
 		"timestamp": timestamp,
 	}
+
+	// Add to sensors set for easy listing
+	r.client.SAdd(ctx, "sensors", sensorID)
+
 	return r.client.HSet(ctx, key, data).Err()
 }
 
@@ -76,7 +85,7 @@ func (r *RedisClient) storeSensorHistory(sensorID int, value float64, timestamp 
 
 	pipe := r.client.Pipeline()
 	pipe.LPush(ctx, key, data)
-	pipe.LTrim(ctx, key, 0, 999) // Keep only last 1000
+	pipe.LTrim(ctx, key, 0, 999)
 	_, err := pipe.Exec(ctx)
 	return err
 }
@@ -93,13 +102,26 @@ func (r *RedisClient) getSensorHistory(sensorID int, count int) ([]string, error
 	return r.client.LRange(ctx, key, 0, int64(count-1)).Result()
 }
 
+// Get all sensor IDs
+func (r *RedisClient) getAllSensors() ([]string, error) {
+	return r.client.SMembers(ctx, "sensors").Result()
+}
+
 // Store gate status
-func (r *RedisClient) storeGateStatus(gateID int, status string, timestamp int64) error {
+func (r *RedisClient) storeGateStatus(gateID int, isOpen bool, timestamp int64) error {
 	key := fmt.Sprintf("gate:%d:latest", gateID)
+	status := "closed"
+	if isOpen {
+		status = "open"
+	}
 	data := map[string]interface{}{
+		"gate_id":   gateID,
 		"status":    status,
+		"is_open":   isOpen,
 		"timestamp": timestamp,
 	}
+
+	r.client.SAdd(ctx, "gates", gateID)
 	return r.client.HSet(ctx, key, data).Err()
 }
 
@@ -107,6 +129,11 @@ func (r *RedisClient) storeGateStatus(gateID int, status string, timestamp int64
 func (r *RedisClient) getGateStatus(gateID int) (map[string]string, error) {
 	key := fmt.Sprintf("gate:%d:latest", gateID)
 	return r.client.HGetAll(ctx, key).Result()
+}
+
+// Get all gate IDs
+func (r *RedisClient) getAllGates() ([]string, error) {
+	return r.client.SMembers(ctx, "gates").Result()
 }
 
 // ============================================================================
@@ -120,13 +147,18 @@ type MQTTHandler struct {
 
 type SensorMessage struct {
 	SensorID  int     `json:"sensor_id"`
+	Type      string  `json:"type"`
+	Lat       float64 `json:"lat"`
+	Lon       float64 `json:"lon"`
 	Value     float64 `json:"value"`
+	Unit      string  `json:"unit"`
 	Timestamp int64   `json:"timestamp"`
 }
 
-type GateMessage struct {
+type GateStatusMessage struct {
 	GateID    int    `json:"gate_id"`
 	Status    string `json:"status"`
+	IsOpen    bool   `json:"is_open"`
 	Timestamp int64  `json:"timestamp"`
 }
 
@@ -159,32 +191,47 @@ func (h *MQTTHandler) subscribe(topic string) {
 }
 
 func (h *MQTTHandler) messageHandler(client mqtt.Client, msg mqtt.Message) {
-	log.Printf("📨 [%s] %s", msg.Topic(), string(msg.Payload()))
+	topic := msg.Topic()
 
-	// Handle sensor data
-	if len(msg.Topic()) > 8 && msg.Topic()[:8] == "sensors/" {
+	// Handle sensor data from farm/sensors/*/sensorID
+	if strings.HasPrefix(topic, "farm/sensors/") {
 		var sensorMsg SensorMessage
 		if err := json.Unmarshal(msg.Payload(), &sensorMsg); err != nil {
 			log.Printf("❌ Failed to parse sensor message: %v", err)
 			return
 		}
 
-		// Store in Redis
-		h.redis.storeSensorReading(sensorMsg.SensorID, sensorMsg.Value, sensorMsg.Timestamp)
+		// Store in Redis with full metadata
+		err := h.redis.storeSensorReading(
+			sensorMsg.SensorID,
+			sensorMsg.Type,
+			sensorMsg.Value,
+			sensorMsg.Unit,
+			sensorMsg.Lat,
+			sensorMsg.Lon,
+			sensorMsg.Timestamp,
+		)
+		if err != nil {
+			log.Printf("❌ Failed to store sensor reading: %v", err)
+			return
+		}
+
+		// Store in history
 		h.redis.storeSensorHistory(sensorMsg.SensorID, sensorMsg.Value, sensorMsg.Timestamp)
 
-		log.Printf("✅ Stored: Sensor %d = %.2f", sensorMsg.SensorID, sensorMsg.Value)
+		log.Printf("✅ Stored: Sensor %d (%s) = %.2f %s",
+			sensorMsg.SensorID, sensorMsg.Type, sensorMsg.Value, sensorMsg.Unit)
 	}
 
 	// Handle gate status
-	if len(msg.Topic()) > 6 && msg.Topic()[:6] == "gates/" {
-		var gateMsg GateMessage
+	if strings.HasPrefix(topic, "farm/gates/") || strings.HasPrefix(topic, "gates/") {
+		var gateMsg GateStatusMessage
 		if err := json.Unmarshal(msg.Payload(), &gateMsg); err != nil {
 			log.Printf("❌ Failed to parse gate message: %v", err)
 			return
 		}
 
-		h.redis.storeGateStatus(gateMsg.GateID, gateMsg.Status, gateMsg.Timestamp)
+		h.redis.storeGateStatus(gateMsg.GateID, gateMsg.IsOpen, gateMsg.Timestamp)
 		log.Printf("✅ Stored: Gate %d = %s", gateMsg.GateID, gateMsg.Status)
 	}
 }
@@ -201,14 +248,26 @@ func newAPIHandlers(redisClient *RedisClient) *APIHandlers {
 	return &APIHandlers{redis: redisClient}
 }
 
-// GET /api/sensors (list all sensors)
+// GET /api/sensors (list all sensors with their latest data)
 func (h *APIHandlers) listSensors(c *fiber.Ctx) error {
-	sensors := []map[string]interface{}{
-		{"id": 101, "type": "soil-moisture", "location": []float64{35.7, 51.4}},
-		{"id": 102, "type": "soil-moisture", "location": []float64{35.71, 51.41}},
-		{"id": 103, "type": "soil-moisture", "location": []float64{35.72, 51.42}},
+	sensorIDs, err := h.redis.getAllSensors()
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
 	}
-	return c.JSON(sensors)
+
+	sensors := []map[string]string{}
+	for _, idStr := range sensorIDs {
+		id, _ := strconv.Atoi(idStr)
+		data, err := h.redis.getLatestReading(id)
+		if err == nil && len(data) > 0 {
+			sensors = append(sensors, data)
+		}
+	}
+
+	return c.JSON(fiber.Map{
+		"sensors": sensors,
+		"count":   len(sensors),
+	})
 }
 
 // GET /api/sensors/:id/latest
@@ -236,13 +295,26 @@ func (h *APIHandlers) getSensorHistory(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"history": history, "count": len(history)})
 }
 
-// GET /api/gates (list all gates)
+// GET /api/gates (list all gates with their status)
 func (h *APIHandlers) listGates(c *fiber.Ctx) error {
-	gates := []map[string]interface{}{
-		{"id": 201, "type": "irrigation", "location": []float64{35.7, 51.4}},
-		{"id": 202, "type": "irrigation", "location": []float64{35.71, 51.41}},
+	gateIDs, err := h.redis.getAllGates()
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
 	}
-	return c.JSON(gates)
+
+	gates := []map[string]string{}
+	for _, idStr := range gateIDs {
+		id, _ := strconv.Atoi(idStr)
+		status, err := h.redis.getGateStatus(id)
+		if err == nil && len(status) > 0 {
+			gates = append(gates, status)
+		}
+	}
+
+	return c.JSON(fiber.Map{
+		"gates": gates,
+		"count": len(gates),
+	})
 }
 
 // GET /api/gates/:id/status
@@ -260,9 +332,12 @@ func (h *APIHandlers) getGateStatus(c *fiber.Ctx) error {
 
 // GET /api/stats (system statistics)
 func (h *APIHandlers) getStats(c *fiber.Ctx) error {
+	sensorIDs, _ := h.redis.getAllSensors()
+	gateIDs, _ := h.redis.getAllGates()
+
 	stats := fiber.Map{
-		"total_sensors": 3,
-		"total_gates":   2,
+		"total_sensors": len(sensorIDs),
+		"total_gates":   len(gateIDs),
 		"status":        "online",
 		"timestamp":     time.Now().Unix(),
 	}
@@ -276,43 +351,34 @@ func (h *APIHandlers) getStats(c *fiber.Ctx) error {
 func main() {
 	log.Println("🚀 Starting Smart Farm Cloud Server...")
 
-	// Load configuration
 	config := loadConfig()
-
-	// Connect to Redis
 	redisClient := newRedisClient(config.RedisAddr)
-
-	// Connect to MQTT
 	mqttHandler := newMQTTHandler(config.MQTTBroker, redisClient)
-	mqttHandler.subscribe("sensors/+/data")
-	mqttHandler.subscribe("gates/+/status")
 
-	// Create Fiber app
+	// Subscribe to correct topics from simulator
+	mqttHandler.subscribe("farm/sensors/#") // All sensor data
+	mqttHandler.subscribe("farm/gates/#")   // All gate status
+	mqttHandler.subscribe("gates/+/status") // Edge processor gate updates
+
 	app := fiber.New(fiber.Config{
 		AppName: "Smart Farm Cloud Server v1.0",
 	})
 
-	// Middleware
 	app.Use(logger.New())
 	app.Use(cors.New())
 
-	// API Routes
 	handlers := newAPIHandlers(redisClient)
 	api := app.Group("/api")
 
-	// Sensor endpoints
 	api.Get("/sensors", handlers.listSensors)
 	api.Get("/sensors/:id/latest", handlers.getLatestReading)
 	api.Get("/sensors/:id/history", handlers.getSensorHistory)
 
-	// Gate endpoints
 	api.Get("/gates", handlers.listGates)
 	api.Get("/gates/:id/status", handlers.getGateStatus)
 
-	// Stats endpoint
 	api.Get("/stats", handlers.getStats)
 
-	// Root endpoint
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{
 			"service": "Smart Farm Cloud Server",
@@ -329,7 +395,6 @@ func main() {
 		})
 	})
 
-	// Start server
 	log.Printf("🌐 Server listening on http://localhost%s", config.HTTPPort)
 	log.Fatal(app.Listen(config.HTTPPort))
 }
