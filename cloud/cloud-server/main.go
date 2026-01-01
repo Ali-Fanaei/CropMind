@@ -367,6 +367,9 @@ func main() {
 	app.Use(logger.New())
 	app.Use(cors.New())
 
+	app.Static("/", "./static")
+
+
 	handlers := newAPIHandlers(redisClient)
 	api := app.Group("/api")
 
@@ -392,6 +395,15 @@ func main() {
 				"/api/gates/:id/status",
 				"/api/stats",
 			},
+		})
+	})
+
+	// Keep the API info endpoint at /api/
+	api.Get("/", func(c *fiber.Ctx) error {
+		return c.JSON(fiber.Map{
+			"service": "Smart Farm Cloud Server",
+			"version": "1.0",
+			"status":  "running",
 		})
 	})
 

@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Farm Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .tab-active {
+            border-bottom: 3px solid #10b981;
+            color: #10b981;
+        }
+
+        .sensor-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: .5;
+            }
+        }
+
+        .status-online {
+            width: 10px;
+            height: 10px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50">
+
+    <!-- Header -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <i class="fas fa-tractor text-3xl text-green-600 mr-3"></i>
+                    <h1 class="text-2xl font-bold text-gray-900">Smart Farm Dashboard</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <div class="status-online"></div>
+                        <span class="text-sm text-gray-600">Live</span>
+                    </div>
+                    <span class="text-sm text-gray-500" id="last-update">Last update: --</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Tabs -->
+    <div class="bg-white border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex space-x-8">
+                <button onclick="switchTab('overview')" id="tab-overview"
+                    class="tab-active py-4 px-2 font-semibold transition-colors">
+                    <i class="fas fa-chart-line mr-2"></i>Overview
+                </button>
+                <button onclick="switchTab('sensors')" id="tab-sensors"
+                    class="py-4 px-2 font-semibold text-gray-600 hover:text-green-600 transition-colors">
+                    <i class="fas fa-microchip mr-2"></i>Sensors
+                </button>
+                <button onclick="switchTab('gates')" id="tab-gates"
+                    class="py-4 px-2 font-semibold text-gray-600 hover:text-green-600 transition-colors">
+                    <i class="fas fa-door-open mr-2"></i>Gates
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- Overview Page -->
+        <div id="page-overview" class="page-content">
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm font-semibold">Total Sensors</p>
+                            <p class="text-3xl font-bold text-gray-900 mt-2" id="stat-sensors">0</p>
+                        </div>
+                        <div class="bg-blue-100 rounded-full p-4">
+                            <i class="fas fa-microchip text-2xl text-blue-500"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm font-semibold">Total Gates</p>
+                            <p class="text-3xl font-bold text-gray-900 mt-2" id="stat-gates">0</p>
+                        </div>
+                        <div class="bg-green-100 rounded-full p-4">
+                            <i class="fas fa-door-open text-2xl text-green-500"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-purple-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm font-semibold">System Status</p>
+                            <p class="text-3xl font-bold text-green-600 mt-2" id="stat-status">Online</p>
+                        </div>
+                        <div class="bg-purple-100 rounded-full p-4">
+                            <i class="fas fa-server text-2xl text-purple-500"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Sensors Activity -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">
+                    <i class="fas fa-history mr-2 text-blue-500"></i>Recent Sensor Activity
+                </h2>
+                <div id="overview-sensors" class="space-y-3">
+                    <p class="text-gray-500">Loading sensors...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sensors Page -->
+        <div id="page-sensors" class="page-content hidden">
+            <div class="mb-6 flex items-center justify-between">
+                <h2 class="text-2xl font-bold text-gray-900">
+                    <i class="fas fa-microchip mr-2 text-blue-500"></i>All Sensors
+                </h2>
+                <div class="flex items-center space-x-3">
+                    <select id="filter-sensor-type"
+                        class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500">
+                        <option value="all">All Types</option>
+                        <option value="soil-moisture">Soil Moisture</option>
+                        <option value="temperature">Temperature</option>
+                        <option value="humidity">Humidity</option>
+                    </select>
+                    <button onclick="refreshData()"
+                        class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
+                        <i class="fas fa-sync-alt mr-2"></i>Refresh
+                    </button>
+                </div>
+            </div>
+            <div id="sensors-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <p class="text-gray-500">Loading sensors...</p>
+            </div>
+        </div>
+
+        <!-- Gates Page -->
+        <div id="page-gates" class="page-content hidden">
+            <div class="mb-6 flex items-center justify-between">
+                <h2 class="text-2xl font-bold text-gray-900">
+                    <i class="fas fa-door-open mr-2 text-green-500"></i>All Gates
+                </h2>
+                <button onclick="refreshData()"
+                    class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
+                    <i class="fas fa-sync-alt mr-2"></i>Refresh
+                </button>
+            </div>
+            <div id="gates-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <p class="text-gray-500">Loading gates...</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Sensor Detail Modal -->
+    <div id="sensor-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b flex justify-between items-center">
+                <h3 class="text-2xl font-bold text-gray-900" id="modal-title">Sensor Details</h3>
+                <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <div id="modal-info" class="grid grid-cols-2 gap-4 mb-6"></div>
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <h4 class="font-bold text-gray-700 mb-4">History (Last 24 Hours)</h4>
+                    <canvas id="sensor-chart" height="80"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let currentTab = 'overview';
+        let sensorsData = [];
+        let gatesData = [];
+        let chartInstance = null;
+
+        // API endpoints
+        const API_BASE = '/api';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            refreshData();
+            setInterval(refreshData, 5000); // Auto-refresh every 5 seconds
+        });
+
+        // Switch tabs
+        function switchTab(tab) {
+            currentTab = tab;
+
+            // Update tab styles
+            ['overview', 'sensors', 'gates'].forEach(t => {
+                const tabBtn = document.getElementById(`tab-${t}`);
+                const page = document.getElementById(`page-${t}`);
+
+                if (t === tab) {
+                    tabBtn.classList.add('tab-active');
+                    tabBtn.classList.remove('text-gray-600');
+                    page.classList.remove('hidden');
+                } else {
+                    tabBtn.classList.remove('tab-active');
+                    tabBtn.classList.add('text-gray-600');
+                    page.classList.add('hidden');
+                }
+            });
+        }
+
+        // Fetch all data
+        async function refreshData() {
+            try {
+                const [statsRes, sensorsRes, gatesRes] = await Promise.all([
+                    fetch(`${API_BASE}/stats`),
+                    fetch(`${API_BASE}/sensors`),
+                    fetch(`${API_BASE}/gates`)
+                ]);
+
+                const stats = await statsRes.json();
+                const sensorsResp = await sensorsRes.json();
+                const gatesResp = await gatesRes.json();
+
+                sensorsData = sensorsResp.sensors || [];
+                gatesData = gatesResp.gates || [];
+
+                updateStats(stats);
+                updateOverview();
+                updateSensorsPage();
+                updateGatesPage();
+                updateLastUpdate();
+            } catch (error) {
+                console.error('Failed to fetch data:', error);
+            }
+        }
+
+        // Update stats cards
+        function updateStats(stats) {
+            document.getElementById('stat-sensors').textContent = stats.total_sensors || 0;
+            document.getElementById('stat-gates').textContent = stats.total_gates || 0;
+            document.getElementById('stat-status').textContent = stats.status === 'online' ? 'Online' : 'Offline';
+        }
+
+        // Update overview page
+        function updateOverview() {
+            const container = document.getElementById('overview-sensors');
+
+            if (!sensorsData || sensorsData.length === 0) {
+                container.innerHTML = '<p class="text-gray-500">No sensors available</p>';
+                return;
+            }
+
+            // Sort by timestamp (most recent first)
+            const sorted = [...sensorsData].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+            const recent = sorted.slice(0, 6);
+
+            container.innerHTML = recent.map(s => `
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                    <div class="flex items-center space-x-4">
+                        <div class="bg-blue-500 rounded-full p-3">
+                            <i class="fas fa-${getSensorIcon(s.type)} text-white"></i>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-gray-900">Sensor #${s.sensor_id} - ${s.type || 'Unknown'}</p>
+                            <p class="text-sm text-gray-600">Location: ${s.lat}, ${s.lon}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-2xl font-bold text-gray-900">${parseFloat(s.value).toFixed(2)} ${s.unit || ''}</p>
+                        <p class="text-xs text-gray-500">${formatTimestamp(s.timestamp)}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Update sensors page
+        function updateSensorsPage() {
+            const container = document.getElementById('sensors-grid');
+            const filter = document.getElementById('filter-sensor-type').value;
+
+            let filtered = sensorsData;
+            if (filter !== 'all') {
+                filtered = sensorsData.filter(s => s.type && s.type.includes(filter));
+            }
+
+            if (!filtered || filtered.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 col-span-full text-center py-8">No sensors found</p>';
+                return;
+            }
+
+            container.innerHTML = filtered.map(s => `
+                <div class="sensor-card bg-white rounded-lg shadow-md p-6 cursor-pointer transition-all duration-200" onclick="showSensorDetail(${s.sensor_id})">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-full p-3">
+                                <i class="fas fa-${getSensorIcon(s.type)} text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="font-bold text-gray-900">Sensor #${s.sensor_id}</p>
+                                <p class="text-sm text-gray-600">${s.type || 'Unknown Type'}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-4 mb-3">
+                        <p class="text-3xl font-bold text-blue-900">${parseFloat(s.value).toFixed(2)}</p>
+                        <p class="text-sm text-blue-700 font-semibold">${s.unit || ''}</p>
+                    </div>
+                    
+                    <div class="space-y-2 text-sm text-gray-600">
+                        <div class="flex items-center">
+                            <i class="fas fa-map-marker-alt text-gray-400 w-5"></i>
+                            <span>${s.lat}, ${s.lon}</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-clock text-gray-400 w-5"></i>
+                            <span>${formatTimestamp(s.timestamp)}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Update gates page
+        function updateGatesPage() {
+            const container = document.getElementById('gates-grid');
+
+            if (!gatesData || gatesData.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 col-span-full text-center py-8">No gates found</p>';
+                return;
+            }
+
+            container.innerHTML = gatesData.map(g => {
+                const isOpen = g.is_open === 'true' || g.is_open === true;
+                const statusColor = isOpen ? 'green' : 'red';
+                const statusIcon = isOpen ? 'door-open' : 'door-closed';
+
+                return `
+                    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-${statusColor}-500">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="bg-${statusColor}-100 rounded-full p-3">
+                                    <i class="fas fa-${statusIcon} text-2xl text-${statusColor}-600"></i>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-gray-900">Gate #${g.gate_id}</p>
+                                    <p class="text-sm text-gray-600">${g.status || 'Unknown'}</p>
+                                </div>
+                            </div>
+                            <span class="px-3 py-1 rounded-full text-sm font-semibold bg-${statusColor}-100 text-${statusColor}-800">
+                                ${isOpen ? 'OPEN' : 'CLOSED'}
+                            </span>
+                        </div>
+                        
+                        <div class="text-sm text-gray-600">
+                            <div class="flex items-center">
+                                <i class="fas fa-clock text-gray-400 w-5 mr-2"></i>
+                                <span>${formatTimestamp(g.timestamp)}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Show sensor detail modal with history chart
+        async function showSensorDetail(sensorId) {
+            const sensor = sensorsData.find(s => s.sensor_id == sensorId);
+            if (!sensor) return;
+
+            document.getElementById('modal-title').textContent = `Sensor #${sensorId} - ${sensor.type}`;
+
+            document.getElementById('modal-info').innerHTML = `
+                <div><span class="font-semibold">Type:</span> ${sensor.type}</div>
+                <div><span class="font-semibold">Current Value:</span> ${parseFloat(sensor.value).toFixed(2)} ${sensor.unit}</div>
+                <div><span class="font-semibold">Location:</span> ${sensor.lat}, ${sensor.lon}</div>
+                <div><span class="font-semibold">Last Update:</span> ${formatTimestamp(sensor.timestamp)}</div>
+            `;
+
+            // Fetch history
+            try {
+                const res = await fetch(`${API_BASE}/sensors/${sensorId}/history?limit=50`);
+                const data = await res.json();
+                const history = data.history || [];
+
+                renderChart(history, sensor.unit);
+            } catch (error) {
+                console.error('Failed to fetch history:', error);
+            }
+
+            document.getElementById('sensor-modal').classList.remove('hidden');
+            document.getElementById('sensor-modal').classList.add('flex');
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('sensor-modal').classList.add('hidden');
+            document.getElementById('sensor-modal').classList.remove('flex');
+            if (chartInstance) {
+                chartInstance.destroy();
+                chartInstance = null;
+            }
+        }
+
+        // Render Chart.js chart
+        function renderChart(history, unit) {
+            const canvas = document.getElementById('sensor-chart');
+            const ctx = canvas.getContext('2d');
+
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            const data = history.map(h => {
+                const parsed = JSON.parse(h);
+                return {
+                    x: new Date(parsed.timestamp * 1000),
+                    y: parsed.value
+                };
+            }).reverse();
+
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: `Value (${unit})`,
+                        data: data,
+                        borderColor: 'rgb(59, 130, 246)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'minute',
+                                displayFormats: {
+                                    minute: 'HH:mm'
+                                }
+                            }
+                        },
+                        y: {
+                            beginAtZero: false
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Utility: Get sensor icon
+        function getSensorIcon(type) {
+            const icons = {
+                'soil-moisture': 'tint',
+                'temperature': 'thermometer-half',
+                'humidity': 'cloud',
+                'light': 'sun',
+                'default': 'microchip'
+            };
+
+            for (const key in icons) {
+                if (type && type.includes(key)) {
+                    return icons[key];
+                }
+            }
+            return icons.default;
+        }
+
+        // Utility: Format timestamp
+        function formatTimestamp(ts) {
+            if (!ts) return 'N/A';
+            const date = new Date(parseInt(ts) * 1000);
+            return date.toLocaleString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Update last update time
+        function updateLastUpdate() {
+            const now = new Date().toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('last-update').textContent = `Last update: ${now}`;
+        }
+
+        // Filter sensor type
+        document.getElementById('filter-sensor-type').addEventListener('change', updateSensorsPage);
+    </script>
+
+</body>
+
+</html>
