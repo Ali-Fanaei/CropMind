@@ -57,7 +57,6 @@ CropMind/
 
 └── README.md
 
-                                                                    text
 
 ---
 
