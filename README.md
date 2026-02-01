@@ -142,15 +142,15 @@ Used only for manual gate testing.
 cd water-gate-test
 go run main.go
 
-Cloud Server API Endpoints
-Endpoint 	Description
-/api/sensors 	List all sensors with latest data
+Cloud                       Server API Endpoints
+Endpoint 	                Description
+/api/sensors 	            List all sensors with latest data
 /api/sensors/:id/latest 	Latest sensor reading
 /api/sensors/:id/history 	Sensor history
-/api/gates 	List all water gates
-/api/gates/:id/status 	Gate status
-/api/stats 	System statistics
-Irrigation Logic (Edge Computing)
+/api/gates 	                List all water gates
+/api/gates/:id/status 	    Gate status
+/api/stats 	                System statistics
+Irrigation                  Logic (Edge Computing)
 
     Soil moisture below 40% → Water gate opens
     Soil moisture above 70% → Water gate closes
